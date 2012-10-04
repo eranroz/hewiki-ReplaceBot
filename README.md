@@ -5,7 +5,7 @@ https://he.wikipedia.org/wiki/%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94:%
 
 The script is based on pywikipediabot.
 
-==Install=
+==Install==
 1. install pywikipedia. 
    see: http://www.mediawiki.org/wiki/Manual:Pywikipediabot/Installation
 2. Download the latest database dump:
