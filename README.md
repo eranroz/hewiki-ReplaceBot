@@ -13,17 +13,17 @@ The script is based on pywikipediabot.
    ( hewiki-YYYYMMDD-pages-articles.xml )
 * place the hewiki-ReplaceBot directory within pywikipedia directory
 * in pywikipedia/pywikibot/text.lib, function replaceExcept, change
-'''python
+```python
                         replacement = replacement[:groupMatch.start()] + \
                                       match.group(groupID) + \
                                       replacement[groupMatch.end():]
-'''
+```
    To:
-'''python
+```python
                         replacement = replacement[:groupMatch.start()] + \
 									  ('' if match.group(groupID)==None else match.group(groupID)) + \
                                       replacement[groupMatch.end():]
-'''
+```
    
    This should allow empty matching groups (eg for /ab(.?)d/ in abd \\1='')
 
