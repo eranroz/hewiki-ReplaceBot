@@ -126,18 +126,18 @@ def main(*args):
     for arg in pywikibot.handleArgs(*args):
         if arg.startswith('-summary:'):
             editSummary = arg[9:]
-        elif arg.startswith('-xml'):
-            if len(arg) == 4:
-                xmlFilename = i18n.input('pywikibot-enter-xml-filename')
-            else:
-                xmlFilename = arg[5:]
         elif arg.startswith('-xmlstart'):
             if len(arg) == 9:
                 xmlStart = pywikibot.input(
                     u'Please enter the dumped article to start with:')
             else:
                 xmlStart = arg[10:]
-    
+        elif arg.startswith('-xml'):
+            if len(arg) == 4:
+                xmlFilename = i18n.input('pywikibot-enter-xml-filename')
+            else:
+                xmlFilename = arg[5:]
+
     if xmlFilename==None:
         pywikibot.output('no xml dump specified. please fill -xml and the xml file to be used')
         return
