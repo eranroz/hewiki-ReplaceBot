@@ -6,4 +6,4 @@ safeTemplatesCategories=[u'תבניות קישורים חיצוניים', u'תב
 nobotRgx=u"\{\{ללא בוט\|([0-9]+)\}\}"
 fileUsageRgx=u'\[\[(File|Image|תמונה|קובץ)\s*:\s*.*?[\|\]]'
 redirectRgx=u'#\s*(הפניה|REDIRECT)\s*\[\['
-namespaces=[0,14,100]
+namespaces=[0,10,14,100]
