@@ -5,31 +5,20 @@ https://he.wikipedia.org/wiki/%D7%95%D7%99%D7%A7%D7%99%D7%A4%D7%93%D7%99%D7%94:%
 
 The script is based on pywikipediabot.
 
-==Install==
+Install
+=======
 * install pywikipedia. 
    see: http://www.mediawiki.org/wiki/Manual:Pywikipediabot/Installation
 * Download the latest database dump:
    http://dumps.wikimedia.org/hewiki/
    ( hewiki-YYYYMMDD-pages-articles.xml )
 * place the hewiki-ReplaceBot directory within pywikipedia directory
-* in pywikipedia/pywikibot/text.lib, function replaceExcept, change
-```python
-                        replacement = replacement[:groupMatch.start()] + \
-                                      match.group(groupID) + \
-                                      replacement[groupMatch.end():]
-```
-   To:
-```python
-                        replacement = replacement[:groupMatch.start()] + \
-									  ('' if match.group(groupID)==None else match.group(groupID)) + \
-                                      replacement[groupMatch.end():]
-```
-   
-   This should allow empty matching groups (eg for /ab(.?)d/ in abd \\1='')
 
-==Use==
+Use
+=======
 python hewikiReplacebot -xml:DUMPNAME
 
-==License==
+License
+=======
 Distributed under the terms of the MIT license.
 
