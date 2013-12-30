@@ -174,8 +174,7 @@ def main(*args):
     #end of specific page
     maxquerysize=60
     gen = genFactory.getCombinedGenerator(gen)
-    preloadingGen = pagegenerators.PreloadingGenerator(gen,pageNumber=maxquerysize)
-    gen=pagegenerators.EdittimeFilterPageGenerator(preloadingGen, endtime=datetime.datetime.utcnow()-datetime.timedelta(days=1))
+    gen = pagegenerators.PreloadingGenerator(gen,pageNumber=maxquerysize)
     pywikibot.output('starting replace')
     bot=ReplaceRobotHe(gen,replaceDict,exceptions,editSummary)
     bot.run()
