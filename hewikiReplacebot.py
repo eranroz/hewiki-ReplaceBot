@@ -149,7 +149,7 @@ def check_titles(site, report_page_name, replacements):
         old_titles = titles_group_t
         evaluation_progress += len(titles_group_t)
         if evaluation_progress % 20000 == 0: print('\r%i page titles processed' % evaluation_progress)
-        old_text = '\n'.join(titles_group_t)
+        old_text = ' \n '.join(titles_group_t)
         for replacement_key, replacement in replacements.items():
             replacement_exceptions = replacement.exceptions or {}
             replacement_exceptions_inside = replacement_exceptions.get('inside', [])
@@ -158,12 +158,16 @@ def check_titles(site, report_page_name, replacements):
                 replacement_exceptions_inside,
                 site=site)
 
-            changed_titles = [old_title[2:-2] for old_title, new_title in zip(old_titles, new_text.split('\n'))
-                              if old_title != new_title and  # replacement change valid title
-                              not pywikibot.Page(site, old_title[2:-2]).isDisambig() and  # valid title is not disambig
-                              old_title != '[[%s' % pywikibot.tools.first_upper(new_title[2:]) and  # breaks link
-                              replacement.old_regex.sub(replacement.new, old_title[2:-2]) != old_title[2:-2]
-                              # no special treat for link
+            # replacement change valid title
+            changed_titles = ((old_title, new_title) for old_title, new_title in zip(old_titles, new_text.split(' \n '))
+                              if old_title != new_title and
+                              old_title != '[[%s' % pywikibot.tools.first_upper(new_title[2:]))  # breaks link
+            # no special treat for link
+            changed_titles = ((old_title, new_title) for old_title, new_title in changed_titles
+                              if replacement.old_regex.sub(replacement.new, ' %s ' % old_title[2:-2]) != ' %s ' % old_title[2:-2])
+            # valid title is not disambig
+            changed_titles = [old_title[2:-2] for old_title, new_title in changed_titles
+                              if not pywikibot.Page(site, old_title[2:-2]).isDisambig()
                               ]
             if len(changed_titles) > 0:
                 replacement_exceptions['inside'] = replacement_exceptions_inside + changed_titles
