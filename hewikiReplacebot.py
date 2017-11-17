@@ -170,7 +170,8 @@ def check_titles(site, report_page_name, replacements):
                               if not pywikibot.Page(site, old_title[2:-2]).isDisambig()
                               ]
             if len(changed_titles) > 0:
-                replacement_exceptions['inside'] = replacement_exceptions_inside + changed_titles
+                replacement_exceptions['inside'] = replacement_exceptions_inside + \
+                                                   [re.compile(re.escape(title), re.U) for title in changed_titles]
                 replacement.exceptions = replacement_exceptions
                 if replacement_key not in exceptions_dict:
                     exceptions_dict[replacement_key] = []
