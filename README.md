@@ -1,4 +1,4 @@
-heWiki Replace bot is a python script for site wide replacements in Hebrew Wikipedia. 
+heWiki Replace bot is a python script for site wide replacements in Hebrew Wikipedia.
 
 See:
 https://he.wikipedia.org/wiki/ויקיפדיה:בוט/בוט_החלפות
@@ -7,8 +7,8 @@ The script is based on pywikibot core.
 
 Install
 =======
-* install pywikipedia. 
-   see: http://www.mediawiki.org/wiki/Manual:Pywikipediabot/Installation
+* install Pywikibot.
+   see: Manual:Pywikibot/Installation
    important: be sure core and scripts directory in pywikibot are in your PYTHONPATH
 * Download the latest database dump:
    http://dumps.wikimedia.org/hewiki/
