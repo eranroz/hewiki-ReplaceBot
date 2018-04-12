@@ -18,7 +18,7 @@ defaultSummary = '[[וק:הח|בוט החלפות]]: '
 safeTemplates = ['ציטוט', 'ציטוטון', 'חלונית', 'מסגרת', 'הדגשה', 'קמץ קטן']
 safeTemplatesCategories = ['תבניות קישורים חיצוניים', 'תבניות ציטוט']
 nobotRgx = "\{\{ללא בוט\|([0-9]+)\}\}"
-fileUsageRgx = '\[\[:?(File|Image|תמונה|קובץ)\s*:\s*.*?[\|\]]'
+fileUsageRgx = '(\[\[:?(?:File|Image|תמונה|קובץ)\s*:\s*.*?[\|\]]|\| *תמונה *= *.+)'
 redirectRgx = '#\s*(הפניה|REDIRECT)\s*\[\['
 namespaces = [0, 10, 14, 100]
 whitelist_editors = ['ערן', 'Matanya']

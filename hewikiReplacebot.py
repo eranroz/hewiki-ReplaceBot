@@ -113,9 +113,9 @@ def fillReplementsDict():
     if page.lastNonBotUser() not in replaceConfig.whitelist_editors:
         raise Exception('Non authorized user edited the replace list. Please verify')
 
-    for x in re.findall(
-            "\\|([0-9]+)\n\\|<nowiki>(.*)</nowiki>\n\\|<nowiki>(.*)</nowiki>\n\\|(?:<nowiki>)?(.*?)(?:\n|</nowiki>)",
-            text):
+    replacement_pattern = "\\|([0-9]+)\n\\|<nowiki>(.*)</nowiki>\n\\|<nowiki>(.*)</nowiki>\n\\|(?:<nowiki>)?(.*?)(?:\n|</nowiki>)"
+    replacelist = re.findall(replacement_pattern, text)
+    for x in replacelist:
         try:
             # compile the regex to check if it is support by python
 
@@ -129,6 +129,11 @@ def fillReplementsDict():
             # some regexs are written for c# and are ignored by this bot
             pywikibot.output('Non supported replacement. ID: %s' % x[0])
             pass
+
+    # avoid running on empty list - this is probably due to wrong pattern
+    if not any(replacelist):
+        raise Exception('Couldnt find replacements in page %s. Expecting pattern: %s' %
+                        (replaceConfig.replacementsPage, replacement_pattern))
     return replaceDict
 
 
