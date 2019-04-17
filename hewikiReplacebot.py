@@ -234,7 +234,7 @@ def main(*args):
         'title': [],
         'text-contains': [re.compile(replaceConfig.redirectRgx, re.I)],
         'inside': [file_usage_rgx, safeTemplatesRgx, yiRgx],
-        'inside-tags': ['nowiki', 'math', 'comment', 'pre', 'source', 'hyperlink', 'gallery'],
+        'inside-tags': ['nowiki', 'math', 'comment', 'pre', 'source', 'hyperlink', 'gallery', 'interwiki'],
         'require-title': [],
     }
 
