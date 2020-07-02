@@ -21,4 +21,4 @@ nobotRgx = "\{\{ללא בוט\|([0-9]+)\}\}"
 fileUsageRgx = '(\[\[(?::c:|:)?(?:File|Image|תמונה|קובץ)\s*:\s*.*?[\|\]]|\| *תמונה[0-9]* *= *.+)'
 redirectRgx = '#\s*(הפניה|REDIRECT)\s*\[\['
 namespaces = [0, 10, 14, 100]
-whitelist_editors = ['ערן', 'Matanya', 'Kotz', 'קיפודנחש', 'Tomer T']
+whitelist_editors = ['ערן', 'Matanya', 'Kotz', 'קיפודנחש', 'Tomer T', 'Uziel302']
