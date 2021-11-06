@@ -59,7 +59,7 @@ class XmlDumpReplacePageGeneratorHe(replace.XmlDumpReplacePageGenerator):
         This is some hack. changing the replacements HERE,
         assuming this check is called before replacement for each page
         """
-        self.replacements = list(getReplacements(self.replace_dict, text))
+        self.replacements = list(get_replacements(self.replace_dict, text))
         return super(XmlDumpReplacePageGeneratorHe, self).isTextExcepted(text)
 
 
@@ -84,7 +84,7 @@ class ReplaceRobotHe(replace.ReplaceRobot):
         the given text.
         """
 
-        self.replacements = list(getReplacements(self.replaceDict, original_text))
+        self.replacements = list(get_replacements(self.replaceDict, original_text))
         return super(ReplaceRobotHe, self).apply_replacements(original_text, applied, page)
 
     def generate_summary(self, applied_replacements):
@@ -92,7 +92,7 @@ class ReplaceRobotHe(replace.ReplaceRobot):
         return self.summaryPrefix + ', '.join(actucal_replacements)
 
 
-def getReplacements(replace_dict, text):
+def get_replacements(replace_dict, text):
     """
     filters disabled replacements from dictionary
     """
@@ -102,14 +102,15 @@ def getReplacements(replace_dict, text):
             yield repRgx
 
 
-def fillReplementsDict():
+def fill_replacements_dict():
     """
     fills replacement dictionary according to replace page
     """
-    site = pywikibot.getSite()
+
+    site = pywikibot.Site()
     page = pywikibot.Page(site, replaceConfig.replacementsPage)
     text = page.get()
-    replaceDict = dict()
+    replace_dict = dict()
     if page.lastNonBotUser() not in replaceConfig.whitelist_editors:
         raise Exception('Non authorized user edited the replace list. Please verify')
 
@@ -124,7 +125,7 @@ def fillReplementsDict():
             else:
                 replacement = HeWikiReplacement(x[1], re.sub('\\$([0-9])', '\\\\\\1', x[2]), {'inside': [x[3]]})
             replacement.compile(use_regex=True, flags=re.UNICODE)
-            replaceDict[x[0]] = replacement
+            replace_dict[x[0]] = replacement
         except:
             # some regexs are written for c# and are ignored by this bot
             pywikibot.output('Non supported replacement. ID: %s' % x[0])
@@ -134,7 +135,7 @@ def fillReplementsDict():
     if not any(replacelist):
         raise Exception('Couldnt find replacements in page %s. Expecting pattern: %s' %
                         (replaceConfig.replacementsPage, replacement_pattern))
-    return replaceDict
+    return replace_dict
 
 
 def check_titles(site, report_page_name, replacements):
@@ -150,7 +151,7 @@ def check_titles(site, report_page_name, replacements):
     evaluation_progress = 0
     exceptions_dict = {}
     for titles_group in itergroup(all_pages, all_pages.query_limit):
-        titles_group_t = [p.title(asLink=True) for p in titles_group]
+        titles_group_t = [p.title(as_link=True, with_section=False) for p in titles_group]
         old_titles = titles_group_t
         evaluation_progress += len(titles_group_t)
         if evaluation_progress % 20000 == 0: print('\r%i page titles processed' % evaluation_progress)
@@ -175,8 +176,10 @@ def check_titles(site, report_page_name, replacements):
                               if not pywikibot.Page(site, old_title[2:-2]).isDisambig()
                               ]
             if len(changed_titles) > 0:
-                replacement_exceptions['inside'] = replacement_exceptions_inside + \
-                                                   [re.compile(re.escape(title), re.U) for title in changed_titles]
+                #changed_titles_exceptions = [re.compile(re.escape(title), re.U) for title in changed_titles]
+                changed_titles_exceptions = [re.compile('\[\[%s\|.+?\]\]|%s' % (re.escape(title), re.escape(title)), re.U)
+                                             for title in changed_titles]
+                replacement_exceptions['inside'] = replacement_exceptions_inside + changed_titles_exceptions
                 replacement.exceptions = replacement_exceptions
                 if replacement_key not in exceptions_dict:
                     exceptions_dict[replacement_key] = []
@@ -192,49 +195,51 @@ def check_titles(site, report_page_name, replacements):
 
 def main(*args):
     pywikibot.output('Starting hewiki-replacebot')
-    editSummary = replaceConfig.defaultSummary
-    xmlFilename = None
-    xmlStart = None
+    edit_summary = replaceConfig.defaultSummary
+    xml_filename = None
+    xml_start = None
     title_check_page = None
     gen = None
     gen_factory = pywikibot.pagegenerators.GeneratorFactory()
     local_args = pywikibot.handle_args(args)
     for arg in local_args:
-        if gen_factory.handleArg(arg):
+        if gen_factory.handle_arg(arg):
             continue
         elif arg.startswith('-summary:'):
-            editSummary = arg[9:]
+            edit_summary = arg[9:]
         elif arg.startswith('-xmlstart'):
             if len(arg) == 9:
-                xmlStart = pywikibot.input('Please enter the dumped article to start with:')
+                xml_start = pywikibot.input('Please enter the dumped article to start with:')
             else:
-                xmlStart = arg[10:]
+                xml_start = arg[10:]
         elif arg.startswith('-xml'):
             if len(arg) == 4:
-                xmlFilename = i18n.input('pywikibot-enter-xml-filename')
+                xml_filename = i18n.input('pywikibot-enter-xml-filename')
             else:
-                xmlFilename = arg[5:]
+                xml_filename = arg[5:]
         elif arg.startswith('-titlecheck'):
             title_check_page = arg[12:]
 
-    replaceDict = fillReplementsDict()
+    replace_dict = fill_replacements_dict()
 
     safe_templates = replaceConfig.safeTemplates
     # add external links templates
     site = pywikibot.Site()
+    site.login()
     for safeCategory in replaceConfig.safeTemplatesCategories:
         cite_templates = pywikibot.Category(site, safeCategory).articles(namespaces=10, recurse=True)
-        cite_templates = [page.title(withNamespace=False) for page in cite_templates]
+        cite_templates = [page.title(with_ns=False) for page in cite_templates]
         safe_templates += cite_templates
-
+    safe_templates = list(set(a for a in safe_templates if '/' not in a))
     file_usage_rgx = re.compile(replaceConfig.fileUsageRgx, re.I)
-    yiRgx = re.compile('\[\[yi:.*?\]\]')
-    safeTemplatesRgx = re.compile('\{\{(' + '|'.join(safe_templates, ) + ').*?\}\}', re.I)
+    yi_rgx = re.compile('\[\[yi:.*?\]\]')
+    safe_templates_rgx = re.compile('\{\{(' + '|'.join(set(safe_templates)) + ').*?\}\}', re.I)
     exceptions = {
         'title': [],
         'text-contains': [re.compile(replaceConfig.redirectRgx, re.I)],
-        'inside': [file_usage_rgx, safeTemplatesRgx, yiRgx],
-        'inside-tags': ['nowiki', 'math', 'comment', 'pre', 'source', 'hyperlink', 'gallery', 'interwiki'],
+        'inside': [file_usage_rgx, safe_templates_rgx, yi_rgx],
+        'inside-tags': ['nowiki', 'math', 'comment', 'pre', 'source', 'hyperlink', 'gallery', 'interwiki',
+                        'templatedata', 'syntaxhighlight'],
         'require-title': [],
     }
 
@@ -244,10 +249,9 @@ def main(*args):
                                          in site.namespaces.items() if ns_index not in replaceConfig.namespaces
                                          for ns_name in ns]
     if title_check_page:
-        site.login()
-        check_titles(site, title_check_page, replaceDict)
-    if xmlFilename:
-        gen = XmlDumpReplacePageGeneratorHe(replaceDict, xmlFilename, xmlStart, exceptions_with_title_ns, site)
+        check_titles(site, title_check_page, replace_dict)
+    if xml_filename:
+        gen = XmlDumpReplacePageGeneratorHe(replace_dict, xml_filename, xml_start, exceptions_with_title_ns, site)
 
     gen = gen_factory.getCombinedGenerator(gen)
     if not gen:
@@ -258,8 +262,7 @@ def main(*args):
     gen = pywikibot.pagegenerators.NamespaceFilterPageGenerator(gen, replaceConfig.namespaces, site)
     gen = pywikibot.pagegenerators.PreloadingGenerator(gen)
     pywikibot.output('starting replace')
-    bot = ReplaceRobotHe(gen, replaceDict, exceptions, editSummary)
-    site.login()
+    bot = ReplaceRobotHe(gen, replace_dict, exceptions, edit_summary)
     bot.run()
     pywikibot.output('finished all replacements')
 
