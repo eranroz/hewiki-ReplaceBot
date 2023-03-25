@@ -146,7 +146,7 @@ def check_titles(site, report_page_name, replacements):
     :param replacements: dictionary of replacements
     """
     from pywikibot import textlib
-    from pywikibot.tools import itergroup
+    from pywikibot.tools.itertools import itergroup
     all_pages = site.allpages(namespace=0, filterredir=False, content=False)
     evaluation_progress = 0
     exceptions_dict = {}
