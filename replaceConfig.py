@@ -15,7 +15,7 @@ Configuration file for hewikiReplaceBot
 """
 replacementsPage = 'ויקיפדיה:בוט/בוט החלפות/רשימת החלפות נוכחית'
 defaultSummary = '[[וק:הח|בוט החלפות]]: '
-safeTemplates = ['ציטוט', 'ציטוטון', 'חלונית', 'מסגרת', 'הדגשה', 'קמץ קטן']
+safeTemplates = ['ציטוט', 'ציטוטון', 'חלונית', 'pgn', 'מסגרת', 'הדגשה', 'קמץ קטן']
 safeTemplatesCategories = ['תבניות קישורים חיצוניים', 'תבניות ציטוט']
 nobotRgx = "\{\{ללא בוט\|([0-9]+)\}\}"
 fileUsageRgx = '(\[\[(?::c:|:)?(?:File|Image|תמונה|קובץ)\s*:\s*.*?[\|\]]|\| *תמונה[0-9]* *= *.+)'
