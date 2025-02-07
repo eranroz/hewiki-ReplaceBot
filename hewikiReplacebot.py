@@ -227,8 +227,19 @@ def main(*args):
     site = pywikibot.Site()
     site.login()
     for safeCategory in replaceConfig.safeTemplatesCategories:
-        cite_templates = pywikibot.Category(site, safeCategory).articles(namespaces=10, recurse=True)
+        cite_templates = list(pywikibot.Category(site, safeCategory).articles(namespaces=10, recurse=True))
+        import pywikibot.data.api as api
+        cite_templates_redirects = []
+        for chunk in range(0, len(cite_templates), 500):
+            redirects_api = site._generator(api.PropertyGenerator, type_arg='redirects',
+                                            prop='redirects', titles=cite_templates[chunk:chunk+500])
+            redirects_api.set_query_increment(500)
+            redirects = (page['redirects'] for page in redirects_api if 'redirects' in page)
+            cite_templates_redirects += [redirect['title'].split(':',1)[1] for redirect_l in redirects
+                                         for redirect in redirect_l if redirect['ns'] == 10]
+
         cite_templates = [page.title(with_ns=False) for page in cite_templates]
+        cite_templates+= cite_templates_redirects
         safe_templates += cite_templates
     safe_templates = list(set(a for a in safe_templates if '/' not in a))
     file_usage_rgx = re.compile(replaceConfig.fileUsageRgx, re.I)
