@@ -177,7 +177,7 @@ def check_titles(site, report_page_name, replacements):
                               ]
             if len(changed_titles) > 0:
                 #changed_titles_exceptions = [re.compile(re.escape(title), re.U) for title in changed_titles]
-                changed_titles_exceptions = [re.compile('\[\[%s\|.+?\]\]|%s' % (re.escape(title), re.escape(title)), re.U)
+                changed_titles_exceptions = [re.compile('\\[\\[%s\\|.+?\\]\\]|%s' % (re.escape(title), re.escape(title)), re.U)
                                              for title in changed_titles]
                 replacement_exceptions['inside'] = replacement_exceptions_inside + changed_titles_exceptions
                 replacement.exceptions = replacement_exceptions
@@ -241,10 +241,10 @@ def main(*args):
         cite_templates = [page.title(with_ns=False) for page in cite_templates]
         cite_templates+= cite_templates_redirects
         safe_templates += cite_templates
-    safe_templates = list(set(a for a in safe_templates if '/' not in a))
+    safe_templates = list(set(re.escape(a) for a in safe_templates if '/' not in a))
     file_usage_rgx = re.compile(replaceConfig.fileUsageRgx, re.I)
-    yi_rgx = re.compile('\[\[yi:.*?\]\]')
-    safe_templates_rgx = re.compile('\{\{(' + '|'.join(set(safe_templates)) + ').*?\}\}', re.I)
+    yi_rgx = re.compile('\\[\\[yi:.*?\\]\\]')
+    safe_templates_rgx = re.compile('\\{\\{(' + '|'.join(set(safe_templates)) + ').*?\\}\\}', re.I | re.DOTALL)
     exceptions = {
         'title': [],
         'text-contains': [re.compile(replaceConfig.redirectRgx, re.I)],
